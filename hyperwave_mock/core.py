@@ -1,3 +1,5 @@
+import requests
+
 def hello_world():
     """Test function to verify package functionality."""
     print("Hello World from Hyperwave Mock!")
