@@ -6,17 +6,26 @@ def hello_world():
     return "Hello World from Hyperwave Mock!"
  
 def simulate_mock():
-      """Call deployed FastAPI endpoint."""
+    """Call deployed FastAPI endpoint."""
 
-      # Update with your Render URL
-      API_URL = "https://hyperwave-cloud.onrender.com"
+    # Update with your Render URL
+    API_URL = "https://hyperwave-cloud.onrender.com"
 
-      response = requests.post(
-          f"{API_URL}/multiply",
-          json={
-              "matrix_a": [[1, 2], [3, 4]],
-              "matrix_b": [[5, 6], [7, 8]]
-          }
-      )
+    response = requests.post(
+        f"{API_URL}/multiply",
+        json={
+            "matrix_a": [[1, 2], [3, 4]],
+            "matrix_b": [[5, 6], [7, 8]]
+        }
+    )
+      
+    try:
+        response.raise_for_status()  # raises HTTPError if status != 200
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        print("HTTP error:", e)
+        print("Response text:", response.text)
+    except ValueError:
+        print("Invalid JSON:", response.text)
 
-      return response.json()
+    return None
