@@ -58,28 +58,14 @@ def simulate_mock(api_key=None):
         cost_per_second = HOURLY_RATE / 3600
         total_cost = computation_time_seconds * cost_per_second
 
-        # Format the response with all available data
-        formatted_response = {
-            "simulation_id_prefix": simulation_id[:8] if simulation_id else "N/A",
-            "full_simulation_id": simulation_id,
-            "duration_seconds": computation_time_seconds,
-            "cost_usd": round(total_cost, 6),
-            "hourly_rate_usd": HOURLY_RATE,
-            "result": result,
-            "matrix_dimensions": f"{rows}x{cols}",
-            "execution_time_seconds": execution_time,
-            "simulated_delay_seconds": simulated_delay,
-            "status": "completed"
-        }
-
         # Print summary for user
         print(f"✓ Simulation completed successfully!")
-        print(f"  - Simulation ID: {formatted_response['simulation_id_prefix']}...")
+        print(f"  - Simulation ID: {simulation_id[:8]}...")
         print(f"  - Duration: {computation_time_seconds:.2f} seconds")
         print(f"  - Cost: ${total_cost:.6f} (at ${HOURLY_RATE}/hour)")
-        print(f"  - Matrix result: {rows}x{cols}")
 
-        return formatted_response
+        # Return only the result
+        return result
 
     except requests.exceptions.HTTPError as e:
         if response.status_code == 401:
