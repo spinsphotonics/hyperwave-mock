@@ -21,10 +21,8 @@ def simulate_mock(api_key=None):
     """
 
     # Check for API key
-    print("Validating API key...")
-
     if not api_key:
-        print("\nAPI key required to proceed.")
+        print("API key required to proceed.")
         print("Sign up for free at spinsphotonics.com to get your API key.")
         return None
 
@@ -65,20 +63,7 @@ def simulate_mock(api_key=None):
         else:
             user_balance = data.get("user_balance", 0)
 
-        # Show successful API key validation
-        print("Authentication successful.")
-        if user_name:
-            print(f"Welcome back, {user_name}")
-
-        # Check balance
-        print("\nChecking account balance...")
-
-        # Show balance and simulation approval
-        if user_balance > 0 or not credit_cache:  # Show message if we have balance or if balance info not available
-            print("Simulation approved")
-            if user_balance > 0:
-                print(f"Current balance: {user_balance:.4f} credits")
-            print("Starting simulation...")
+        # No intermediate messages for successful path
 
         # Extract simulation metadata from response
         simulation_id = data.get("simulation_id", "")
@@ -94,12 +79,10 @@ def simulate_mock(api_key=None):
         new_balance = user_balance - credits_used if user_balance > 0 else 0
 
         # Print simulation results
-        print(f"\nSimulation complete.")
-        print(f"  Simulation ID: {simulation_id[:8] if len(simulation_id) > 8 else simulation_id}")
-        print(f"  Runtime: {computation_time_seconds:.2f} seconds")
-        print(f"  Credits consumed: {credits_used:.6f}")
-        if user_balance > 0:
-            print(f"  Remaining balance: {new_balance:.4f} credits")
+        print("Simulation complete.")
+        print(f"Simulation ID: {simulation_id[:8] if len(simulation_id) > 8 else simulation_id}")
+        print(f"Runtime: {computation_time_seconds:.2f} seconds")
+        print(f"Credits consumed: {credits_used:.6f}")
 
         # Return only the result
         return result
@@ -111,11 +94,11 @@ def simulate_mock(api_key=None):
             response_text = e.response.text
 
             if status_code == 401:
-                print("\nNo API key detected in request.")
+                print("No API key detected in request.")
                 print("Sign up for free at spinsphotonics.com to get your API key.")
                 return None
             elif status_code == 403:
-                print("\nInvalid API key detected.")
+                print("Provided API key is invalid.")
                 print("Please verify your API key in your dashboard at spinsphotonics.com/dashboard")
                 return None
             elif status_code == 402:
@@ -127,41 +110,41 @@ def simulate_mock(api_key=None):
                 except:
                     balance_msg = ""
 
-                print("\nInsufficient credits for simulation.")
+                print("Insufficient credits for simulation.")
                 print("Minimum required: 0.01 credits")
                 if balance_msg:
                     print(balance_msg)
-                print("\nAdd credits to your account at spinsphotonics.com/billing")
+                print("Add credits to your account at spinsphotonics.com/billing")
                 return None
             elif status_code == 502:
-                print("\nService temporarily unavailable.")
+                print("Service temporarily unavailable.")
                 print("Our servers are experiencing high load. Please retry in a few moments.")
                 return None
             else:
-                print(f"\nUnexpected error (Code: {status_code})")
+                print(f"Unexpected error (Code: {status_code})")
                 print("Please try again or contact support if the issue persists.")
                 return None
         else:
-            print(f"\nCommunication error.")
+            print("Communication error.")
             print("Unable to process your request at this time. Please try again later.")
             return None
 
     except requests.exceptions.Timeout:
-        print("\nRequest timeout.")
+        print("Request timeout.")
         print("The simulation server is taking longer than expected. Please try again.")
         return None
 
     except requests.exceptions.ConnectionError as e:
-        print("\nConnection failed.")
+        print("Connection failed.")
         print("Unable to reach simulation servers. Please check your network connection and try again.")
         return None
 
     except requests.exceptions.RequestException as e:
-        print("\nCommunication error.")
+        print("Communication error.")
         print("Unable to process your request at this time. Please try again later.")
         return None
 
     except ValueError as e:
-        print("\nInvalid server response.")
+        print("Invalid server response.")
         print("Received malformed data from server. Our team has been notified.")
         return None
