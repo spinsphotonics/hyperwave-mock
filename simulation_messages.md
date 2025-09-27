@@ -10,8 +10,6 @@ Validating API key...
 
 API key required to proceed.
 Sign up for free at spinsphotonics.com to get your API key.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 1.2: Invalid/Wrong Token (HTTP 403)
@@ -20,20 +18,18 @@ Validating API key...
 
 Invalid API key detected.
 Please verify your API key in your dashboard at spinsphotonics.com/dashboard
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 1.3: Valid Token
 ```
 Validating API key...
-Authentication successful for {user_email}
+Authentication successful.
 Welcome back, {user_name}
 ```
 OR (if no name available)
 ```
 Validating API key...
-Authentication successful for {user_email}
+Authentication successful.
 ```
 
 ### 2. Balance Check
@@ -47,20 +43,20 @@ Minimum required: 0.01 credits
 Current balance: {current_balance} credits
 
 Add credits to your account at spinsphotonics.com/billing
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 2.2: Sufficient Balance
 ```
+Checking account balance...
 Simulation approved
 Current balance: {balance:.4f} credits
-Initializing simulation environment...
+Starting simulation...
 ```
 OR (if balance info not available from backend)
 ```
+Checking account balance...
 Simulation approved
-Initializing simulation environment...
+Starting simulation...
 ```
 
 ### 3. Simulation Execution
@@ -68,14 +64,15 @@ Initializing simulation environment...
 #### Path 3.1: Successful Simulation
 ```
 Validating API key...
-Authentication successful for {user_email}
+Authentication successful.
 Welcome back, {user_name}
 
+Checking account balance...
 Simulation approved
 Current balance: {balance:.4f} credits
-Initializing simulation environment...
+Starting simulation...
 
-Simulation complete
+Simulation complete.
   Simulation ID: {first_8_chars_of_id}
   Runtime: {computation_time:.2f} seconds
   Credits consumed: {credits_used:.6f}
@@ -90,8 +87,6 @@ Validating API key...
 
 No API key detected in request.
 Sign up for free at spinsphotonics.com to get your API key.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.2: Server Error (HTTP 502)
@@ -100,8 +95,6 @@ Validating API key...
 
 Service temporarily unavailable.
 Our servers are experiencing high load. Please retry in a few moments.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.3: Request Timeout
@@ -110,8 +103,6 @@ Validating API key...
 
 Request timeout.
 The simulation server is taking longer than expected. Please try again.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.4: Connection Error
@@ -120,8 +111,6 @@ Validating API key...
 
 Connection failed.
 Unable to reach simulation servers. Please check your network connection and try again.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.5: Generic Request Failure
@@ -130,8 +119,6 @@ Validating API key...
 
 Communication error.
 Unable to process your request at this time. Please try again later.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.6: Invalid JSON Response
@@ -140,8 +127,6 @@ Validating API key...
 
 Invalid server response.
 Received malformed data from server. Our team has been notified.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 #### Path 4.7: Other HTTP Errors
@@ -150,8 +135,6 @@ Validating API key...
 
 Unexpected error (Code: {status_code})
 Please try again or contact support if the issue persists.
-
-Need help? Contact us at spinsphotonics.com/contact
 ```
 
 ## Balance Calculation
@@ -190,14 +173,15 @@ For example:
 
 ```
 Validating API key...
-Authentication successful for john.doe@example.com
+Authentication successful.
 Welcome back, John Doe
 
+Checking account balance...
 Simulation approved
 Current balance: 114.9560 credits
-Initializing simulation environment...
+Starting simulation...
 
-Simulation complete
+Simulation complete.
   Simulation ID: abc12345
   Runtime: 10.50 seconds
   Credits consumed: 0.002917
@@ -206,13 +190,13 @@ Simulation complete
 
 ## Professional Message Guidelines
 
-1. **Tone**: Clear, concise, and professional without being robotic
+1. **Tone**: Clear, concise, and professional
 2. **Structure**: Status → Details → Action (if needed)
 3. **Errors**: Always provide actionable next steps
-4. **Support**: Include contact information only on terminal error states
-5. **Numbers**:
+4. **Numbers**:
    - Balance: 4 decimal places
    - Credits consumed: 6 decimal places
    - Runtime: 2 decimal places
-6. **No emojis or special characters** except standard punctuation
-7. **No technical jargon** in user-facing messages (no HTTP codes in main message, only in error codes)
+5. **No emojis or special characters** except standard punctuation
+6. **No technical jargon** in user-facing messages (no HTTP codes in main message, only in error codes)
+7. **No "Need help?" messages** - Keep messages focused and professional
