@@ -8,33 +8,32 @@
 ```
 Validating API key...
 
-❌ No API key provided.
-Please sign up for an API key at spinsphotonics.com
+API key required to proceed.
+Sign up for free at spinsphotonics.com to get your API key.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "API key is required. Please provide a valid API key."}`
 
 #### Path 1.2: Invalid/Wrong Token (HTTP 403)
 ```
 Validating API key...
 
-❌ Invalid API key.
-Please check your API key or verify if it's still active at your dashboard on spinsphotonics.com
+Invalid API key detected.
+Please verify your API key in your dashboard at spinsphotonics.com/dashboard
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Invalid API key"}`
 
 #### Path 1.3: Valid Token
 ```
 Validating API key...
-✓ API key verified for {user_email}. Welcome, {user_name}!
+Authentication successful for {user_email}
+Welcome back, {user_name}
 ```
 OR (if no name available)
 ```
 Validating API key...
-✓ API key verified for {user_email}.
+Authentication successful for {user_email}
 ```
 
 ### 2. Balance Check
@@ -43,23 +42,25 @@ Validating API key...
 ```
 Validating API key...
 
-❌ Insufficient balance.
-Minimum credits required: 0.01 to start simulation
-Please top up your account at spinsphotonics.com
+Insufficient credits for simulation.
+Minimum required: 0.01 credits
+Current balance: {current_balance} credits
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Add credits to your account at spinsphotonics.com/billing
+
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Insufficient balance: {response_text}"}`
 
 #### Path 2.2: Sufficient Balance
 ```
-✓ Simulation approved. Your current balance is: {balance:.4f} credits
-Starting simulation...
+Simulation approved
+Current balance: {balance:.4f} credits
+Initializing simulation environment...
 ```
 OR (if balance info not available from backend)
 ```
-✓ Simulation approved.
-Starting simulation...
+Simulation approved
+Initializing simulation environment...
 ```
 
 ### 3. Simulation Execution
@@ -67,17 +68,19 @@ Starting simulation...
 #### Path 3.1: Successful Simulation
 ```
 Validating API key...
-✓ API key verified for {user_email}. Welcome, {user_name}!
+Authentication successful for {user_email}
+Welcome back, {user_name}
 
-✓ Simulation approved. Your current balance is: {balance:.4f} credits
-Starting simulation...
+Simulation approved
+Current balance: {balance:.4f} credits
+Initializing simulation environment...
 
-✓ Simulation completed successfully!
-  - Simulation ID: {first_8_chars_of_id}...
-  - Duration: {computation_time:.2f} seconds
-  - Credits used: {credits_used:.6f}
+Simulation complete
+  Simulation ID: {first_8_chars_of_id}
+  Runtime: {computation_time:.2f} seconds
+  Credits consumed: {credits_used:.6f}
+  Remaining balance: {new_balance:.4f} credits
 ```
-**Return Value:** The actual simulation result (matrix multiplication result or other computation data)
 
 ### 4. Error Scenarios
 
@@ -85,77 +88,71 @@ Starting simulation...
 ```
 Validating API key...
 
-❌ No API key provided.
-Please sign up for an API key at spinsphotonics.com
+No API key detected in request.
+Sign up for free at spinsphotonics.com to get your API key.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "API key is required. Please provide X-API-Key header."}`
 
 #### Path 4.2: Server Error (HTTP 502)
 ```
 Validating API key...
 
-❌ Server error.
-The service may be starting up or experiencing issues. Please try again in a moment.
+Service temporarily unavailable.
+Our servers are experiencing high load. Please retry in a few moments.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Server error (502 Bad Gateway). The service may be starting up or experiencing issues. Please try again in a moment."}`
 
 #### Path 4.3: Request Timeout
 ```
 Validating API key...
 
-❌ Request timed out.
-The server may be slow to respond. Please try again.
+Request timeout.
+The simulation server is taking longer than expected. Please try again.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Request timed out. The server may be slow to respond."}`
 
 #### Path 4.4: Connection Error
 ```
 Validating API key...
 
-❌ Connection error.
-Failed to connect to the server. Please check your internet connection.
+Connection failed.
+Unable to reach simulation servers. Please check your network connection and try again.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Failed to connect to the server. Please check your internet connection."}`
 
 #### Path 4.5: Generic Request Failure
 ```
 Validating API key...
 
-❌ Request failed.
-An unexpected error occurred while communicating with the server.
+Communication error.
+Unable to process your request at this time. Please try again later.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Request failed: {error_details}"}`
 
 #### Path 4.6: Invalid JSON Response
 ```
 Validating API key...
 
-❌ Invalid server response.
-The server returned an unexpected response format.
+Invalid server response.
+Received malformed data from server. Our team has been notified.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "Invalid response from server"}`
 
 #### Path 4.7: Other HTTP Errors
 ```
 Validating API key...
 
-❌ Unexpected error (HTTP {status_code})
+Unexpected error (Code: {status_code})
+Please try again or contact support if the issue persists.
 
-Something doesn't look right? Contact us at spinsphotonics.com/contact
+Need help? Contact us at spinsphotonics.com/contact
 ```
-**Return Value:** `{"error": "HTTP {status_code}: {response_text}"}`
 
 ## Balance Calculation
 
@@ -193,22 +190,29 @@ For example:
 
 ```
 Validating API key...
-✓ API key verified for john.doe@example.com. Welcome, John Doe!
+Authentication successful for john.doe@example.com
+Welcome back, John Doe
 
-✓ Simulation approved. Your current balance is: 114.9560 credits
-Starting simulation...
+Simulation approved
+Current balance: 114.9560 credits
+Initializing simulation environment...
 
-✓ Simulation completed successfully!
-  - Simulation ID: abc12345...
-  - Duration: 10.50 seconds
-  - Credits used: 0.002917
+Simulation complete
+  Simulation ID: abc12345
+  Runtime: 10.50 seconds
+  Credits consumed: 0.002917
+  Remaining balance: 114.9531 credits
 ```
 
-## Notes
+## Professional Message Guidelines
 
-1. All terminal error messages (final messages in error paths) include the support contact line
-2. Success messages use checkmarks (✓) while errors use X marks (❌)
-3. The actual simulation result data is returned separately from these display messages
-4. User information (email, name, balance) is only shown if provided by the backend
-5. Balance is shown with 4 decimal places for precision
-6. Credits used is shown with 6 decimal places for accuracy
+1. **Tone**: Clear, concise, and professional without being robotic
+2. **Structure**: Status → Details → Action (if needed)
+3. **Errors**: Always provide actionable next steps
+4. **Support**: Include contact information only on terminal error states
+5. **Numbers**:
+   - Balance: 4 decimal places
+   - Credits consumed: 6 decimal places
+   - Runtime: 2 decimal places
+6. **No emojis or special characters** except standard punctuation
+7. **No technical jargon** in user-facing messages (no HTTP codes in main message, only in error codes)

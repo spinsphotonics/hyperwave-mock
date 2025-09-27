@@ -24,10 +24,10 @@ def simulate_mock(api_key=None):
     print("Validating API key...")
 
     if not api_key:
-        print("\n❌ No API key provided.")
-        print("Please sign up for an API key at spinsphotonics.com")
-        print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-        return {"error": "API key is required. Please provide a valid API key."}
+        print("\nAPI key required to proceed.")
+        print("Sign up for free at spinsphotonics.com to get your API key.")
+        print("\nNeed help? Contact us at spinsphotonics.com/contact")
+        return None
 
     API_URL = "https://hyperwave-cloud.onrender.com"
     HOURLY_RATE = 12.0  # $12/hour compute rate
@@ -68,17 +68,17 @@ def simulate_mock(api_key=None):
 
         # Show successful API key validation
         if user_name:
-            print(f"✓ API key verified for {user_email}. Welcome, {user_name}!")
+            print(f"Authentication successful for {user_email}")
+            print(f"Welcome back, {user_name}")
         else:
-            print(f"✓ API key verified for {user_email}.")
+            print(f"Authentication successful for {user_email}")
 
         # Show balance and simulation approval
         if user_balance > 0 or not credit_cache:  # Show message if we have balance or if balance info not available
+            print("\nSimulation approved")
             if user_balance > 0:
-                print(f"\n✓ Simulation approved. Your current balance is: {user_balance:.4f} credits")
-            else:
-                print(f"\n✓ Simulation approved.")
-            print("Starting simulation...")
+                print(f"Current balance: {user_balance:.4f} credits")
+            print("Initializing simulation environment...")
 
         # Extract simulation metadata from response
         simulation_id = data.get("simulation_id", "")
@@ -91,12 +91,15 @@ def simulate_mock(api_key=None):
 
         # Calculate credits used (seconds / 3600)
         credits_used = computation_time_seconds / 3600
+        new_balance = user_balance - credits_used if user_balance > 0 else 0
 
         # Print simulation results
-        print(f"\n✓ Simulation completed successfully!")
-        print(f"  - Simulation ID: {simulation_id[:8]}...")
-        print(f"  - Duration: {computation_time_seconds:.2f} seconds")
-        print(f"  - Credits used: {credits_used:.6f}")
+        print(f"\nSimulation complete")
+        print(f"  Simulation ID: {simulation_id[:8] if len(simulation_id) > 8 else simulation_id}")
+        print(f"  Runtime: {computation_time_seconds:.2f} seconds")
+        print(f"  Credits consumed: {credits_used:.6f}")
+        if user_balance > 0:
+            print(f"  Remaining balance: {new_balance:.4f} credits")
 
         # Return only the result
         return result
@@ -108,55 +111,67 @@ def simulate_mock(api_key=None):
             response_text = e.response.text
 
             if status_code == 401:
-                print("\n❌ No API key provided.")
-                print("Please sign up for an API key at spinsphotonics.com")
-                print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-                return {"error": "API key is required. Please provide X-API-Key header."}
+                print("\nNo API key detected in request.")
+                print("Sign up for free at spinsphotonics.com to get your API key.")
+                print("\nNeed help? Contact us at spinsphotonics.com/contact")
+                return None
             elif status_code == 403:
-                print("\n❌ Invalid API key.")
-                print("Please check your API key or verify if it's still active at your dashboard on spinsphotonics.com")
-                print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-                return {"error": "Invalid API key"}
+                print("\nInvalid API key detected.")
+                print("Please verify your API key in your dashboard at spinsphotonics.com/dashboard")
+                print("\nNeed help? Contact us at spinsphotonics.com/contact")
+                return None
             elif status_code == 402:
-                print("\n❌ Insufficient balance.")
-                print("Minimum credits required: 0.01 to start simulation")
-                print("Please top up your account at spinsphotonics.com")
-                print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-                return {"error": f"Insufficient balance: {response_text}"}
+                # Try to extract current balance from response if available
+                try:
+                    error_data = e.response.json()
+                    current_balance = error_data.get("current_balance", 0)
+                    balance_msg = f"Current balance: {current_balance:.4f} credits"
+                except:
+                    balance_msg = ""
+
+                print("\nInsufficient credits for simulation.")
+                print("Minimum required: 0.01 credits")
+                if balance_msg:
+                    print(balance_msg)
+                print("\nAdd credits to your account at spinsphotonics.com/billing")
+                print("\nNeed help? Contact us at spinsphotonics.com/contact")
+                return None
             elif status_code == 502:
-                print("\n❌ Server error.")
-                print("The service may be starting up or experiencing issues. Please try again in a moment.")
-                print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-                return {"error": "Server error (502 Bad Gateway). The service may be starting up or experiencing issues. Please try again in a moment."}
+                print("\nService temporarily unavailable.")
+                print("Our servers are experiencing high load. Please retry in a few moments.")
+                print("\nNeed help? Contact us at spinsphotonics.com/contact")
+                return None
             else:
-                print(f"\n❌ Unexpected error (HTTP {status_code})")
-                print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-                return {"error": f"HTTP {status_code}: {response_text}"}
+                print(f"\nUnexpected error (Code: {status_code})")
+                print("Please try again or contact support if the issue persists.")
+                print("\nNeed help? Contact us at spinsphotonics.com/contact")
+                return None
         else:
-            print(f"\n❌ HTTP error occurred")
-            print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-            return {"error": f"HTTP error: {str(e)}"}
+            print(f"\nCommunication error.")
+            print("Unable to process your request at this time. Please try again later.")
+            print("\nNeed help? Contact us at spinsphotonics.com/contact")
+            return None
 
     except requests.exceptions.Timeout:
-        print("\n❌ Request timed out.")
-        print("The server may be slow to respond. Please try again.")
-        print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-        return {"error": "Request timed out. The server may be slow to respond."}
+        print("\nRequest timeout.")
+        print("The simulation server is taking longer than expected. Please try again.")
+        print("\nNeed help? Contact us at spinsphotonics.com/contact")
+        return None
 
     except requests.exceptions.ConnectionError as e:
-        print("\n❌ Connection error.")
-        print("Failed to connect to the server. Please check your internet connection.")
-        print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-        return {"error": "Failed to connect to the server. Please check your internet connection."}
+        print("\nConnection failed.")
+        print("Unable to reach simulation servers. Please check your network connection and try again.")
+        print("\nNeed help? Contact us at spinsphotonics.com/contact")
+        return None
 
     except requests.exceptions.RequestException as e:
-        print("\n❌ Request failed.")
-        print("An unexpected error occurred while communicating with the server.")
-        print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-        return {"error": f"Request failed: {str(e)}"}
+        print("\nCommunication error.")
+        print("Unable to process your request at this time. Please try again later.")
+        print("\nNeed help? Contact us at spinsphotonics.com/contact")
+        return None
 
     except ValueError as e:
-        print("\n❌ Invalid server response.")
-        print("The server returned an unexpected response format.")
-        print("\nSomething doesn't look right? Contact us at spinsphotonics.com/contact")
-        return {"error": "Invalid response from server"}
+        print("\nInvalid server response.")
+        print("Received malformed data from server. Our team has been notified.")
+        print("\nNeed help? Contact us at spinsphotonics.com/contact")
+        return None
