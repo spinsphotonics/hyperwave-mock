@@ -4,7 +4,7 @@ def hello_world():
     """Test function to verify package functionality."""
     print("Hello World from Hyperwave Mock!")
     return "Hello World from Hyperwave Mock!"
- 
+
 def simulate_mock(api_key=None):
     """
     Call deployed FastAPI endpoint with API key authentication.
@@ -39,7 +39,8 @@ def simulate_mock(api_key=None):
                 "matrix_a": [[1, 2], [3, 4]],
                 "matrix_b": [[5, 6], [7, 8]]
             },
-            headers=headers
+            headers=headers,
+            timeout=60  # Add explicit timeout
         )
 
         response.raise_for_status()  # raises HTTPError if status != 200
@@ -68,19 +69,43 @@ def simulate_mock(api_key=None):
         return result
 
     except requests.exceptions.HTTPError as e:
-        if response.status_code == 401:
-            print("Error: API key is required")
-            return {"error": "API key is required. Please provide X-API-Key header."}
-        elif response.status_code == 403:
-            print("Error: Invalid API key")
-            return {"error": "Invalid API key"}
+        # Access the response from the exception object
+        if e.response is not None:
+            status_code = e.response.status_code
+            response_text = e.response.text
+
+            if status_code == 401:
+                print("Error: API key is required")
+                return {"error": "API key is required. Please provide X-API-Key header."}
+            elif status_code == 403:
+                print("Error: Invalid API key")
+                return {"error": "Invalid API key"}
+            elif status_code == 402:
+                print("Error: Insufficient balance")
+                return {"error": f"Insufficient balance: {response_text}"}
+            elif status_code == 502:
+                print("Error: Bad Gateway - The server is having issues")
+                return {"error": "Server error (502 Bad Gateway). The service may be starting up or experiencing issues. Please try again in a moment."}
+            else:
+                print(f"HTTP error: {e}")
+                print(f"Response: {response_text}")
+                return {"error": f"HTTP {status_code}: {response_text}"}
         else:
             print(f"HTTP error: {e}")
-            print(f"Response: {response.text}")
-            return {"error": f"HTTP {response.status_code}: {response.text}"}
+            return {"error": f"HTTP error: {str(e)}"}
+
+    except requests.exceptions.Timeout:
+        print("Request timed out")
+        return {"error": "Request timed out. The server may be slow to respond."}
+
+    except requests.exceptions.ConnectionError as e:
+        print(f"Connection error: {e}")
+        return {"error": "Failed to connect to the server. Please check your internet connection."}
+
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
         return {"error": f"Request failed: {str(e)}"}
-    except ValueError:
-        print(f"Invalid JSON response: {response.text}")
+
+    except ValueError as e:
+        print(f"Invalid JSON response: {e}")
         return {"error": "Invalid response from server"}
